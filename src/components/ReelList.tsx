@@ -15,9 +15,12 @@ import {
   Sliders,
   Youtube,
   ExternalLink,
+  Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Reel, InteractionType, SingleReelUnderstanding } from '../types';
+import { VideoPlayerModal } from './VideoPlayerModal';
+import { openYouTubeVideo } from '../utils/youtubeUrl';
 
 interface ReelListProps {
   reels: Reel[];
@@ -39,6 +42,7 @@ export const ReelList: React.FC<ReelListProps> = ({
   onOpenYouTubeHistory,
 }) => {
   const [expandedReelId, setExpandedReelId] = useState<string | null>(null);
+  const [playingReel, setPlayingReel] = useState<Reel | null>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedReelId((prev) => (prev === id ? null : id));
@@ -106,13 +110,23 @@ export const ReelList: React.FC<ReelListProps> = ({
             >
               <div>
                 {/* Thumbnail & Quick Overlays */}
-                <div className="relative h-28 bg-slate-100 overflow-hidden">
+                <div
+                  onClick={() => setPlayingReel(reel)}
+                  className="relative h-28 bg-slate-100 overflow-hidden cursor-pointer group/thumb"
+                >
                   <img
                     src={reel.thumbnailUrl}
                     alt={reel.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
+                    className="w-full h-full object-cover group-hover/thumb:scale-105 transition-all duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+
+                  {/* Play Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-70 group-hover/thumb:opacity-100 transition-opacity">
+                    <div className="w-8 h-8 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-md transform group-hover/thumb:scale-110 transition-transform">
+                      <Play className="w-4 h-4 fill-current ml-0.5" />
+                    </div>
+                  </div>
 
                   {/* Top Badge: Category & Index */}
                   <div className="absolute top-2 left-2 flex items-center gap-1.5 flex-wrap max-w-[80%]">
@@ -131,18 +145,17 @@ export const ReelList: React.FC<ReelListProps> = ({
                   </div>
 
                   {/* Top Right: Actions */}
-                  <div className="absolute top-2 right-2 flex items-center gap-1">
-                    {reel.videoUrl && (
-                      <a
-                        href={reel.videoUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-1 rounded-md bg-white/90 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-2xs"
-                        title="Watch on YouTube"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute top-2 right-2 flex items-center gap-1 z-10"
+                  >
+                    <button
+                      onClick={() => openYouTubeVideo(reel.videoUrl, reel.title, reel.creator)}
+                      className="p-1 rounded-md bg-white/90 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-2xs"
+                      title="Watch on YouTube"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={() => onDeleteReel(reel.id)}
                       className="p-1 rounded-md bg-white/90 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-2xs"
@@ -285,6 +298,13 @@ export const ReelList: React.FC<ReelListProps> = ({
           );
         })}
       </div>
+
+      {/* In-App Video Player Modal */}
+      <VideoPlayerModal
+        isOpen={Boolean(playingReel)}
+        onClose={() => setPlayingReel(null)}
+        video={playingReel}
+      />
     </section>
   );
 };

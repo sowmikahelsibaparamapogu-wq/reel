@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, Layers, ShieldAlert, ShieldCheck, CheckCircle2, Award, Zap } from 'lucide-react';
+import { X, Layers, ShieldAlert, ShieldCheck, CheckCircle2, Award, Zap, Youtube, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CandidateRecommendation } from '../types';
+import { openYouTubeVideo } from '../utils/youtubeUrl';
 
 interface CandidatePoolModalProps {
   isOpen: boolean;
@@ -114,7 +115,7 @@ export const CandidatePoolModal: React.FC<CandidatePoolModalProps> = ({
                     )}
 
                     {/* Metric Pills */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono mb-3">
                       <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex justify-between shadow-2xs">
                         <span className="text-slate-500">Relevance:</span>
                         <span className="font-bold text-indigo-700">{cand.relevanceScore}%</span>
@@ -140,6 +141,18 @@ export const CandidatePoolModal: React.FC<CandidatePoolModalProps> = ({
                           {cand.hypeRisk}/100
                         </span>
                       </div>
+                    </div>
+
+                    {/* Direct Watch Button */}
+                    <div className="flex justify-end pt-1">
+                      <button
+                        onClick={() => openYouTubeVideo(cand.videoUrl, cand.title, cand.category)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition-all cursor-pointer"
+                      >
+                        <Youtube className="w-3.5 h-3.5 fill-current" />
+                        <span>Watch on YouTube</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </button>
                     </div>
                   </div>
                 );

@@ -34,6 +34,9 @@ import { WeeklyProgressCard } from './components/WeeklyProgressCard';
 import { AskYourFeedChat } from './components/AskYourFeedChat';
 import { AgentEvaluationModal } from './components/AgentEvaluationModal';
 import { YouTubeHistoryModal } from './components/YouTubeHistoryModal';
+import { YouTubeUrlAnalyzer } from './components/YouTubeUrlAnalyzer';
+import { CategoryTopVideosSection } from './components/CategoryTopVideosSection';
+import { YouTubeRagScraperStudio } from './components/YouTubeRagScraperStudio';
 import { DEFAULT_DEMO_REELS } from './data/mockScenarios';
 import {
   Reel,
@@ -43,6 +46,7 @@ import {
   InteractionType,
   TrapTestScenario,
   CandidateRecommendation,
+  SingleReelUnderstanding,
 } from './types';
 
 export default function App() {
@@ -145,6 +149,14 @@ export default function App() {
     setReels(combined);
     // Automatically personalize and analyze based on new YouTube Shorts
     runAnalysis({ targetReels: combined, overrideMode: 'exploit' });
+  };
+
+  // Handle live scraped YouTube URL completion
+  const handleScrapedUrlComplete = (scrapedReel: Reel, _understanding: SingleReelUnderstanding) => {
+    const existing = reels.filter((r) => r.id !== scrapedReel.id);
+    const updated = [scrapedReel, ...existing];
+    setReels(updated);
+    runAnalysis({ targetReels: updated, overrideMode: 'exploit' });
   };
 
   // Trigger initial analysis on first mount if not yet analyzed
@@ -297,6 +309,12 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+        {/* Live YouTube URL Scraper & Instant Personalized Recommender */}
+        <YouTubeUrlAnalyzer
+          onAnalyzeComplete={handleScrapedUrlComplete}
+          isGlobalAnalyzing={isAnalyzing}
+        />
+
         {/* Category Filter & Selector Bar */}
         <CategoryFilterBar
           selectedCategory={selectedCategory}
@@ -341,6 +359,20 @@ export default function App() {
             isAnalyzing={isAnalyzing}
           />
         )}
+
+        {/* Live Interactive Category Input -> YouTube RAG Model Scraper & Recommendations */}
+        <YouTubeRagScraperStudio
+          recentReels={reels}
+          onAddReelToFeed={handleAddReel}
+        />
+
+        {/* Top Useful Tech Videos & Shorts by Category + User YouTube History */}
+        <CategoryTopVideosSection
+          selectedCategoryId={selectedCategory}
+          onSelectCategory={handleCategorySelect}
+          userReels={reels}
+          onAddReelToFeed={handleAddReel}
+        />
 
         {/* 2-Column Responsive Dashboard Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

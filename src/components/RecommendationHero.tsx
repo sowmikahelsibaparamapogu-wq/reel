@@ -17,10 +17,15 @@ import {
   Layers,
   Award,
   BookOpen,
+  Youtube,
+  ExternalLink,
+  Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { RecommendationResult, FeedbackItem } from '../types';
+import { VideoPlayerModal } from './VideoPlayerModal';
+import { openYouTubeVideo } from '../utils/youtubeUrl';
 
 interface RecommendationHeroProps {
   recommendation: RecommendationResult | null;
@@ -41,6 +46,7 @@ export const RecommendationHero: React.FC<RecommendationHeroProps> = ({
 }) => {
   const [showWhyDeep, setShowWhyDeep] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState<string | null>(null);
+  const [isPlayingHero, setIsPlayingHero] = useState(false);
 
   if (isAnalyzing) {
     return (
@@ -150,12 +156,39 @@ export const RecommendationHero: React.FC<RecommendationHeroProps> = ({
           &ldquo;{recommendation.recommendedTechReel}&rdquo;
         </h2>
 
-        {recommendation.creatorOrSource && (
-          <p className="text-xs font-mono text-slate-500">
-            Recommended Channel / Concept Source:{' '}
-            <span className="text-indigo-600 font-semibold">{recommendation.creatorOrSource}</span>
-          </p>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+          {recommendation.creatorOrSource && (
+            <p className="text-xs font-mono text-slate-500">
+              Recommended Channel / Concept Source:{' '}
+              <span className="text-indigo-600 font-semibold">{recommendation.creatorOrSource}</span>
+            </p>
+          )}
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsPlayingHero(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Play Video</span>
+            </button>
+
+            <button
+              onClick={() =>
+                openYouTubeVideo(
+                  recommendation.videoUrl,
+                  recommendation.recommendedTechReel,
+                  recommendation.creatorOrSource
+                )
+              }
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+            >
+              <Youtube className="w-3.5 h-3.5 fill-current" />
+              <span>Watch on YouTube</span>
+              <ExternalLink className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Latent Interest Bridge Banner */}
@@ -415,6 +448,31 @@ export const RecommendationHero: React.FC<RecommendationHeroProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Hero Video Modal */}
+      <VideoPlayerModal
+        isOpen={isPlayingHero}
+        onClose={() => setIsPlayingHero(false)}
+        video={{
+          id: recommendation.id || 'hero-rec',
+          title: recommendation.recommendedTechReel,
+          creator: recommendation.creatorOrSource || '@tech_curator',
+          category: recommendation.category,
+          categoryId: 'ai-ml',
+          subTopic: recommendation.latentInterestFound,
+          duration: '59s',
+          format: 'Short',
+          difficulty: recommendation.difficulty,
+          educationalScore: recommendation.educationalValue,
+          qualityScore: recommendation.qualityScore,
+          whyUseful: recommendation.whyRecommended,
+          keyConcepts: [recommendation.latentInterestFound, recommendation.interestDetected],
+          videoUrl: recommendation.videoUrl || 'https://www.youtube.com/watch?v=5TR2ERbN8jE',
+          thumbnailUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80',
+          viewsOrLikes: '850K views',
+          isTrending: true,
+        }}
+      />
     </motion.section>
   );
 };

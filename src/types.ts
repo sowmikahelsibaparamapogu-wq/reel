@@ -89,6 +89,9 @@ export interface CandidateRecommendation {
   whyThisCandidate: string;
   hypeExplanation?: string;
   status: 'selected' | 'alternative' | 'filtered_out';
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  creator?: string;
 }
 
 export interface LearningPathStep {
@@ -130,6 +133,10 @@ export interface RecommendationResult {
   whyDoIGetThis: string;
   repetitionWarning?: string;
   
+  // Video & Links
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  
   // Alternatives & Candidates
   comparison?: BestMatchComparison;
   allCandidates?: CandidateRecommendation[];
@@ -140,6 +147,25 @@ export interface RecommendationResult {
   surpriseConnection?: string;
   
   timestamp: string;
+}
+
+export interface ScrapedYouTubeAnalysis {
+  scrapedReel: Reel;
+  understanding: SingleReelUnderstanding;
+  personalizedSuggestions: CandidateRecommendation[];
+  suggestedLearningBridge: string;
+  categoryInsights: {
+    category: string;
+    subTopics: string[];
+    recommendedShorts: Array<{
+      title: string;
+      creator: string;
+      videoUrl: string;
+      thumbnailUrl: string;
+      whyWatch: string;
+      educationalRating: number;
+    }>;
+  };
 }
 
 export interface TechCategory {
@@ -336,3 +362,63 @@ export interface YouTubeHistoryItem {
   interaction: InteractionType;
   category?: string;
 }
+
+export interface CuratedCategoryVideo {
+  id: string;
+  title: string;
+  creator: string;
+  creatorAvatar?: string;
+  category: string;
+  categoryId: string;
+  subTopic: string;
+  duration: string;
+  format: 'Short' | 'Video' | 'Deep Dive';
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  educationalScore: number;
+  qualityScore: number;
+  whyUseful: string;
+  keyConcepts: string[];
+  videoUrl: string;
+  thumbnailUrl: string;
+  viewsOrLikes?: string;
+  isTrending?: boolean;
+}
+
+export interface YouTubeRAGVideo {
+  id: string;
+  title: string;
+  creator: string;
+  category: string;
+  subTopic: string;
+  duration: string;
+  format: 'Short' | 'Deep Dive' | 'Tutorial' | 'Architecture Walkthrough';
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  educationalScore: number;
+  qualityScore: number;
+  whyUseful: string;
+  keyConcepts: string[];
+  videoUrl: string;
+  thumbnailUrl: string;
+  viewsOrLikes: string;
+  isTrending?: boolean;
+  codeSnippetOrTakeaway?: string;
+}
+
+export interface YouTubeRAGScrapeResult {
+  customCategory: string;
+  userGoal: string;
+  targetSkillLevel: string;
+  extractedLatentConcepts: string[];
+  prerequisites: string[];
+  ragRoadmapSteps: Array<{
+    step: number;
+    title: string;
+    description: string;
+    estimatedTime: string;
+  }>;
+  recommendedVideos: YouTubeRAGVideo[];
+  aiSynthesis: string;
+  scrapedAt: string;
+}
+
+

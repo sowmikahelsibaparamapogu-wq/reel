@@ -1,0 +1,6 @@
+{
+  "name": "Sadhan AI",
+  "description": "AI-powered tech reel recommendation agent that analyzes short-form content interactions, infers latent developer interests, identifies skill gaps, and recommends personalized learning paths across all technology categories.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

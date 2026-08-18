@@ -2806,7 +2806,7 @@ Return JSON strictly in this format:
 }`;
 
       const geminiRes = await gemini.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.7-flash',
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
@@ -2892,7 +2892,7 @@ Return JSON strictly matching this schema:
 }`;
 
       const geminiRes = await gemini.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.7-flash',
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
@@ -3052,7 +3052,7 @@ Return JSON strictly matching this schema:
 }`;
 
       const geminiRes = await gemini.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.7-flash',
         contents: ragPrompt,
         config: {
           responseMimeType: 'application/json',
